@@ -1,6 +1,7 @@
 package xyz.fabiano.letsync
 
 import xyz.fabiano.letsync.dsl.sync
+import xyz.fabiano.letsync.core.sink.DefaultOutputPrinterSink
 
 fun main() {
     val sync = sync<String, String> {
@@ -10,14 +11,22 @@ fun main() {
             fixedThreads = 1
         }
 
-        sourceFunction = { "value" }
+        source {
+            var i = 5
+            hasNext {
+                i -= 1
+                i > 0
+            }
+            retrieve { "hello world! $i" }
+        }
 
-        transformer = { it.toUpperCase() }
+        transformer { it.toUpperCase() }
 
-        sinkFunction = { println(it) }
+        sink { println(it) }
+        sink { println(it) }
+        sink { println(it) }
+        sink = DefaultOutputPrinterSink()
     }
 
     sync.start()
-
-    Thread.sleep(1000)
 }

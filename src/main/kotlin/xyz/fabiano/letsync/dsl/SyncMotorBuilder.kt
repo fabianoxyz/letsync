@@ -1,9 +1,8 @@
 package xyz.fabiano.letsync.dsl
 
 import xyz.fabiano.letsync.api.SyncMotor
-import xyz.fabiano.letsync.dsl.SyncDsl
-import xyz.fabiano.letsync.engine.motor.ExecutorServiceSyncMotor
-import java.util.concurrent.Executors
+import xyz.fabiano.letsync.core.motor.ExecutorServiceSyncMotor
+import java.util.concurrent.ForkJoinPool
 
 @SyncDsl
 class SyncMotorBuilder {
@@ -14,7 +13,8 @@ class SyncMotorBuilder {
 
     fun build() : SyncMotor {
         if(fixedThreads != null) {
-            return ExecutorServiceSyncMotor(Executors.newFixedThreadPool(fixedThreads!!))
+            val forkJoinPool = ForkJoinPool(fixedThreads!!)
+            return ExecutorServiceSyncMotor(forkJoinPool)
 //        } else if(minThreads != null && maxThreads != null) {
 //            return ExecutorServiceSyncMotor(ThreadPoolExecutor())
         } else {

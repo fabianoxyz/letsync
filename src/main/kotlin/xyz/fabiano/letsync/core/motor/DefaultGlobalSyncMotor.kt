@@ -1,4 +1,4 @@
-package xyz.fabiano.letsync.engine.motor
+package xyz.fabiano.letsync.core.motor
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope

@@ -1,6 +1,3 @@
 package xyz.fabiano.letsync.api
 
-@FunctionalInterface
-interface SinkChannel<T> {
-    fun accept(value : T)
-}
+interface SinkChannel<T> : (T) -> Unit
