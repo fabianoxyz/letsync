@@ -5,18 +5,18 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.stream.Stream
 
-class CsvFileSourceReader<T>(
-    filename : String,
-    private val parser : (String) -> T
-) : SourceReader<T> {
+class CsvFileSourceReader(
+    private val filename : String,
+    private val skipFirstLine : Boolean,
+    private val separator : Char
+) : SourceReader<CsvLine> {
 
-    private val lineStream : Stream<String> = Files.lines(Paths.get(filename))
-
-    override suspend fun read(emitter : suspend (T) -> Unit) {
-        lineStream.iterator().forEach { emitter.invoke(parser.invoke(it)) }
-    }
-
-    override suspend fun hasNext() = false
+    private val skip = if (skipFirstLine) 1L else 0L
+    private val lineStream : Stream<String> = Files.lines(Paths.get(filename)).skip(skip)
 
     override fun close() { }
+
+    override suspend fun read(emitter: suspend (CsvLine) -> Unit) {
+        lineStream.iterator().forEach { emitter.invoke(CsvLine(it, separator)) }
+    }
 }

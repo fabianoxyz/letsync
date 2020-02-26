@@ -1,20 +1,32 @@
 package xyz.fabiano.letsync.core.source
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import xyz.fabiano.letsync.api.SourceReader
+import xyz.fabiano.letsync.threadSummary
 
 class StringMemoryReader(
-    values: List<String>
+    private val values: List<String>
 ) : SourceReader<String> {
 
-    private val values = values.iterator()
-
     override suspend fun read(emitter: suspend (String) -> Unit) {
-        emitter.invoke(values.next())
+        scan().collect {
+            println(threadSummary("read"))
+            emitter.invoke(it)
+        }
     }
 
-    override suspend fun hasNext(): Boolean {
-        return values.hasNext()
+    private fun scan(): Flow<String> {
+        return flow {
+            values.forEach {
+                println(threadSummary("scanner"))
+                emit(it)
+            }
+        }
     }
 
-    override fun close() {}
+    override fun close() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

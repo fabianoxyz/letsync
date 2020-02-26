@@ -1,19 +1,19 @@
 package xyz.fabiano.letsync
 
-import kotlinx.coroutines.delay
-import xyz.fabiano.letsync.core.sink.DefaultOutputPrinterSink
 import xyz.fabiano.letsync.core.source.StringMemoryReader
-import xyz.fabiano.letsync.core.trigger.ExecuteOnceTrigger
+import xyz.fabiano.letsync.dsl.seconds
 import xyz.fabiano.letsync.dsl.sync
 
 fun main() {
     val sync = sync<String, String> {
         name = "Console Printer"
 
-        trigger = ExecuteOnceTrigger()
+//        trigger = ExecuteOnceTrigger()
+
+        trigger every 2.seconds()
 
         motor {
-            fixedThreads = 2
+            fixedThreads = 3
         }
 
         source = StringMemoryReader(
@@ -22,12 +22,14 @@ fun main() {
 
         transformer { it.toUpperCase() }
 
-        sink { println(it) }
-        sink { println("**$it**") }
-        sink = DefaultOutputPrinterSink()
+        sink {
+//            delay(100L)
+//            println(threadSummary("sink1") + it)
+        }
+//        sink { println(threadSummary("sink2") + "**$it**") }
     }
 
     sync.start()
 
-    Thread.sleep(1_000)
+    Thread.sleep(10_000L)
 }

@@ -2,6 +2,9 @@ package xyz.fabiano.letsync
 
 import xyz.fabiano.letsync.dsl.sync
 import xyz.fabiano.letsync.core.sink.DefaultOutputPrinterSink
+import xyz.fabiano.letsync.core.sink.FunctionSink
+import xyz.fabiano.letsync.mongodb.mongo
+import xyz.fabiano.letsync.mongodb.sinkOnMongo
 
 fun main() {
     val sync = sync<String, String> {
@@ -22,11 +25,19 @@ fun main() {
 
         transformer { it.toUpperCase() }
 
-        sink { println(it) }
-        sink { println(it) }
-        sink { println(it) }
-        sink = DefaultOutputPrinterSink()
+        sinkOnMongo {
+
+        }
+
+        sink {
+            mongo {  }
+            with { FunctionSink { println(it) } }
+        }
     }
 
     sync.start()
+}
+
+fun threadSummary(component : String) : String {
+    return "$component - thread: ${Thread.currentThread().name} # "
 }

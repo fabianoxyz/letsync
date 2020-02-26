@@ -4,4 +4,5 @@ import kotlinx.coroutines.CoroutineScope
 
 interface SyncMotor {
     fun coroutineScope() : CoroutineScope
+
 }

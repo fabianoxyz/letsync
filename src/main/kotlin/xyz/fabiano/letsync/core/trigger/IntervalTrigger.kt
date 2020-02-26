@@ -4,6 +4,7 @@ import kotlinx.coroutines.delay
 import xyz.fabiano.letsync.api.Trigger
 import java.time.Duration
 
+
 class IntervalTrigger(
     private val interval : Duration
 ) : Trigger {
@@ -19,7 +20,7 @@ class IntervalTrigger(
         running = true
         while (!stop) {
             function.invoke()
-            holdOn()
+            holdOn() // There's an issue here as it will hold
         }
         running = false
 //        stoppingHooks.forEach { it.invoke() }
