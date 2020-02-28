@@ -1,22 +1,20 @@
 package xyz.fabiano.letsync.dsl
 
-import xyz.fabiano.letsync.api.SinkChannel
-import xyz.fabiano.letsync.api.SourceReader
-import xyz.fabiano.letsync.api.SyncMotor
+import xyz.fabiano.letsync.api.LetSyncSink
 import xyz.fabiano.letsync.core.Synchronization
-import xyz.fabiano.letsync.core.motor.DefaultGlobalSyncMotor
 import xyz.fabiano.letsync.core.sink.FunctionSink
 
 @SyncDsl
 class SyncBuilder<R, S> {
     var name = "Default Sync"
-    var motor: SyncMotor = DefaultGlobalSyncMotor()
-    val trigger = SyncTriggerBuilder()
-    lateinit var transformer: ((R) -> S)
-    lateinit var source: SourceReader<R>
-    var sink: SinkChannel<S>? = null
+    var engine = LetSyncEngineBuilder()
+    var trigger = SyncTriggerBuilder()
+    var source = LetSyncSourceBuilder<R>()
 
-    private val sinks: MutableList<SinkChannel<S>> = mutableListOf()
+    var sink: LetSyncSink<S>? = null
+    private val sinks: MutableList<LetSyncSink<S>> = mutableListOf()
+
+    lateinit var transformer: ((R) -> S)
 
     infix fun name(name : String) {
         this.name = name
@@ -34,17 +32,17 @@ class SyncBuilder<R, S> {
         transformer = block
     }
 
-    fun motor(block: SyncMotorBuilder.() -> Unit): SyncMotor {
-        motor = SyncMotorBuilder().apply(block).build()
-        return motor
+    fun engine(block: LetSyncEngineBuilder.() -> Unit): LetSyncEngineBuilder {
+        engine.apply(block).build()
+        return engine
     }
 
-    fun source(block: SourceReaderBuilder<R>.() -> Unit): SourceReader<R> {
-        source = SourceReaderBuilder<R>().apply(block).build()
+    fun source(block: LetSyncSourceBuilder<R>.() -> Unit): LetSyncSourceBuilder<R> {
+        source.apply(block)
         return source
     }
 
-    fun sink(sinkChannel: SinkChannel<S>) {
+    fun sink(sinkChannel: LetSyncSink<S>) {
         sinks.add(sinkChannel)
     }
 
@@ -59,8 +57,7 @@ class SyncBuilder<R, S> {
 
     fun build(): Synchronization<R, S> {
         sink?.let { sinks.add(it) }
-
-        return Synchronization(name, trigger.build(), motor.coroutineScope(), transformer, source, sinks)
+        return Synchronization(name, trigger.build(), engine.build(), source.build(), sinks, transformer)
     }
 }
 

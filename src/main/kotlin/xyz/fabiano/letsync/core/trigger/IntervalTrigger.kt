@@ -1,13 +1,13 @@
 package xyz.fabiano.letsync.core.trigger
 
 import kotlinx.coroutines.delay
-import xyz.fabiano.letsync.api.Trigger
+import xyz.fabiano.letsync.api.LetSyncTrigger
 import java.time.Duration
 
 
 class IntervalTrigger(
     private val interval : Duration
-) : Trigger {
+) : LetSyncTrigger {
 
     var running = false
         private set
@@ -16,7 +16,7 @@ class IntervalTrigger(
 
     private var stoppingHooks : MutableList<() -> Any> = mutableListOf({})
 
-    override suspend fun manage(function: suspend () -> Unit) {
+    override suspend fun trigger(function: suspend () -> Unit) {
         running = true
         while (!stop) {
             function.invoke()

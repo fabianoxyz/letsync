@@ -3,12 +3,12 @@ package xyz.fabiano.letsync.core.source
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import xyz.fabiano.letsync.api.SourceReader
+import xyz.fabiano.letsync.api.LetSyncSource
 import xyz.fabiano.letsync.threadSummary
 
 class StringMemoryReader(
     private val values: List<String>
-) : SourceReader<String> {
+) : LetSyncSource<String> {
 
     override suspend fun read(emitter: suspend (String) -> Unit) {
         scan().collect {

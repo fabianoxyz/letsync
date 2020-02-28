@@ -1,19 +1,19 @@
 package xyz.fabiano.letsync.dsl
 
-import xyz.fabiano.letsync.api.Trigger
+import xyz.fabiano.letsync.api.LetSyncTrigger
 import xyz.fabiano.letsync.core.trigger.IntervalTrigger
 import java.time.Duration
 
 @SyncDsl
 class SyncTriggerBuilder {
 
-    private var trigger: Trigger? = null
+    private var trigger: LetSyncTrigger? = null
 
     infix fun every(duration: Duration) {
         trigger = IntervalTrigger(duration)
     }
 
-    fun build(): Trigger {
+    fun build(): LetSyncTrigger {
         if (trigger != null) {
             return trigger!!
         } else {

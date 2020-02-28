@@ -1,9 +1,9 @@
 package xyz.fabiano.letsync.core.trigger
 
-import xyz.fabiano.letsync.api.Trigger
+import xyz.fabiano.letsync.api.LetSyncTrigger
 
-class ExecuteOnceTrigger : Trigger {
-    override suspend fun manage(function: suspend () -> Unit) {
+class ExecuteOnceTrigger : LetSyncTrigger {
+    override suspend fun trigger(function: suspend () -> Unit) {
         function.invoke()
     }
 }

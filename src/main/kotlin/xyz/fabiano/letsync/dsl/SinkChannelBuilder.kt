@@ -1,15 +1,15 @@
 package xyz.fabiano.letsync.dsl
 
-import xyz.fabiano.letsync.api.SinkChannel
+import xyz.fabiano.letsync.api.LetSyncSink
 import xyz.fabiano.letsync.core.sink.FunctionSink
 
 @SyncDsl
 class SinkChannelBuilder<T> {
 
-    private var foreignBuilder : (() -> SinkChannel<T>)? = null
+    private var foreignBuilder : (() -> LetSyncSink<T>)? = null
     private var function : ((T) -> Unit)? = null
 
-    fun with(builder: () -> SinkChannel<T>) {
+    fun with(builder: () -> LetSyncSink<T>) {
         foreignBuilder = builder
     }
 
@@ -17,11 +17,11 @@ class SinkChannelBuilder<T> {
         this.function = function
     }
 
-    fun build() : SinkChannel<T> {
+    fun build() : LetSyncSink<T> {
         return foreignBuilder?.invoke() ?: buildWithoutForeigner()
     }
 
-    private fun buildWithoutForeigner() : SinkChannel<T> {
+    private fun buildWithoutForeigner() : LetSyncSink<T> {
         return FunctionSink(function!!)
     }
 }

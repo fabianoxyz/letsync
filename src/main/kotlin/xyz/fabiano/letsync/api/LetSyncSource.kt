@@ -1,5 +1,5 @@
 package xyz.fabiano.letsync.api
 
-interface SourceReader<T> : AutoCloseable {
+interface LetSyncSource<T> : AutoCloseable {
     suspend fun read(emitter : suspend (T) -> Unit)
 }

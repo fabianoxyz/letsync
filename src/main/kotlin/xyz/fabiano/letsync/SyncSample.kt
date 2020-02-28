@@ -10,8 +10,11 @@ fun main() {
     val sync = sync<String, String> {
         name = "Console Printer"
 
-        motor {
-            fixedThreads = 1
+        engine {
+            globalScope { false }
+            firstInFirstOut { false }
+            bufferSize { 400 }
+            fixedThreadNumber { 4 }
         }
 
         source {

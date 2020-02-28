@@ -1,5 +1,5 @@
 package xyz.fabiano.letsync.api
 
-interface SinkChannel<T> {
+interface LetSyncSink<T> {
     suspend fun sink(entity: T)
 }

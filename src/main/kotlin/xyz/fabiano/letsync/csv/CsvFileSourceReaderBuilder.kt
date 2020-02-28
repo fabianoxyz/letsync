@@ -1,6 +1,6 @@
 package xyz.fabiano.letsync.csv
 
-import xyz.fabiano.letsync.dsl.SourceReaderBuilder
+import xyz.fabiano.letsync.dsl.LetSyncSourceBuilder
 
 class CsvFileSourceReaderBuilder {
     var filename: String? = null
@@ -24,7 +24,7 @@ class CsvFileSourceReaderBuilder {
     }
 }
 
-fun SourceReaderBuilder<CsvLine>.csv(block: CsvFileSourceReaderBuilder.() -> Unit) {
+fun LetSyncSourceBuilder<CsvLine>.csv(block: CsvFileSourceReaderBuilder.() -> Unit) {
     this.with { CsvFileSourceReaderBuilder().apply(block).build() }
 }
 

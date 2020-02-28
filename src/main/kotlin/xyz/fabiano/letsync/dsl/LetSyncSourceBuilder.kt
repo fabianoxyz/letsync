@@ -1,12 +1,12 @@
 package xyz.fabiano.letsync.dsl
 
-import xyz.fabiano.letsync.api.SourceReader
+import xyz.fabiano.letsync.api.LetSyncSource
 
 @SyncDsl
-class SourceReaderBuilder<T> {
+class LetSyncSourceBuilder<T> {
     var hasNext = { false }
     lateinit var retrieve : () -> T
-    var extension : (() ->  SourceReader<T>)? = null
+    var extension : (() ->  LetSyncSource<T>)? = null
 
     fun hasNext(block : () -> Boolean) {
         hasNext = block
@@ -16,15 +16,15 @@ class SourceReaderBuilder<T> {
         retrieve = block
     }
 
-    fun with(source : () -> SourceReader<T>) {
+    fun with(source : () -> LetSyncSource<T>) {
         extension = source
     }
 
-    private fun buildWithExtension() : SourceReader<T>? {
+    private fun buildWithExtension() : LetSyncSource<T>? {
         return extension?.invoke()
     }
 
-    fun build() : SourceReader<T> {
+    fun build() : LetSyncSource<T> {
         return buildWithExtension() ?: throw IllegalStateException()
     }
 }
