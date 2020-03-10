@@ -13,6 +13,8 @@ fun main() {
     val sync = sync<CsvLine, Person> {
         name = "Console Printer"
 
+        preserveOrder { true }
+
         engine {
             globalScope { false }
             firstInFirstOut { false }
@@ -61,8 +63,6 @@ fun main() {
     }
 
     sync.start()
-
-    Thread.sleep(10_000)
 }
 
 data class Person(

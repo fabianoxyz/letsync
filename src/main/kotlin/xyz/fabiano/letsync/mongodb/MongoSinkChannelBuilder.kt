@@ -4,8 +4,8 @@ import com.mongodb.ConnectionString
 import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import xyz.fabiano.letsync.api.LetSyncSink
-import xyz.fabiano.letsync.dsl.SinkChannelBuilder
-import xyz.fabiano.letsync.dsl.SyncBuilder
+import xyz.fabiano.letsync.dsl.LetSyncSinkBuilder
+import xyz.fabiano.letsync.dsl.LetSyncBuilder
 import xyz.fabiano.letsync.dsl.SyncDsl
 
 @SyncDsl
@@ -72,16 +72,16 @@ class MongoSinkChannelBuilder<C : Any> {
     }
 }
 
-inline fun <reified T : Any> SinkChannelBuilder<T>.mongo(block: MongoSinkChannelBuilder<T>.() -> Unit) {
+inline fun <reified T : Any> LetSyncSinkBuilder<T>.mongo(block: MongoSinkChannelBuilder<T>.() -> Unit) {
     val channel = MongoSinkChannelBuilder<T>().apply(block).build<T>()
     this.with { channel }
 }
 
-inline fun <R, reified S : Any> SyncBuilder<R, S>.sinkOnMongo(block: MongoSinkChannelBuilder<S>.() -> Unit) {
+inline fun <R, reified S : Any> LetSyncBuilder<R, S>.sinkOnMongo(block: MongoSinkChannelBuilder<S>.() -> Unit) {
     this.sink(MongoSinkChannelBuilder<S>().apply(block).build())
 }
 
 inline fun <reified T : Any> MongoSinkChannelBuilder<T>.collection(collection : () -> CoroutineCollection<T>) {
     val coll = collection.invoke()
-    SinkChannelBuilder<T>().with { this.buildWithCollection(coll) }
+    LetSyncSinkBuilder<T>().with { this.buildWithCollection(coll) }
 }

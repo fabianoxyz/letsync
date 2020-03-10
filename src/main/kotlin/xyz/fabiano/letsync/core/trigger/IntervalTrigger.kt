@@ -16,7 +16,7 @@ class IntervalTrigger(
 
     private var stoppingHooks : MutableList<() -> Any> = mutableListOf({})
 
-    override suspend fun trigger(function: suspend () -> Unit) {
+    override fun trigger(function: () -> Unit) {
         running = true
         while (!stop) {
             function.invoke()
@@ -30,7 +30,7 @@ class IntervalTrigger(
         stop = true
     }
 
-    private suspend fun holdOn() {
-        delay(interval.toMillis())
+    private fun holdOn() {
+        throw NotImplementedError()
     }
 }

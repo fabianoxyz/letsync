@@ -5,56 +5,40 @@ import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import xyz.fabiano.letsync.api.LetSyncEngine
-import xyz.fabiano.letsync.api.LetSyncSink
-import xyz.fabiano.letsync.api.LetSyncSource
-import xyz.fabiano.letsync.api.LetSyncTrigger
+import xyz.fabiano.letsync.api.*
 import java.time.Instant
 
-class Synchronization<R, S>(
-    private val name: String,
-    private val trigger: LetSyncTrigger,
-    private val engine: LetSyncEngine,
-    private val source: LetSyncSource<R>,
-    private val sinks: MutableList<LetSyncSink<S>>,
-    private val transformer: (R) -> S
-) {
-    private var job: Job? = null
+class ParallelSync<R, S>(
+    name: String,
+    trigger: LetSyncTrigger,
+    engine: LetSyncEngine,
+    source: LetSyncSource<R>,
+    sinks: MutableList<LetSyncSink<S>>,
+    transformer: (R) -> S
+) : AbstractSynchronization<R, S>(name, trigger, engine, source, sinks, transformer) {
 
-    private val coroutineScope = engine.coroutineScope()
-
-    fun start() {
-        job = coroutineScope.launch {
-            trigger.trigger(this@Synchronization::execute)
-        }
+    override fun start() {
+        trigger.trigger(this::execute)
     }
 
-    private suspend fun execute() {
+    override fun execute() {
         val start = Instant.now()
         println("Starting execution at $start")
 
-        flow<R> {
-            source.read(this::emit)
-        }.transform(coroutineScope, 400) {
-            transformer.invoke(it)
-        }.parallelCollect(coroutineScope, 400) {
-            sinks.forEach { s -> s.sink(it) }
+        engine.run {
+            flow<R> {
+                source.read(this::emit)
+            }.transform(coroutineScope, engine.bufferSize()) {
+                transformer.invoke(it)
+            }.parallelCollect(coroutineScope, engine.bufferSize()) {
+                sinks.forEach { s -> s.sink(it) }
+            }
+
+            val end = Instant.now()
+            println("Ending job at $end. It took ${end.minusMillis(start.toEpochMilli())} to run.")
         }
-
-
-//        flow<R> {
-//            source.read(this::send)
-//        }.map {
-//            transformer.invoke(it)
-//        }.collect {
-//            sinks.forEach { s -> s.sink(it) }
-//        }
-
-        val end = Instant.now()
-        println("Ending job at $end. It took ${end.minusMillis(start.toEpochMilli())} to run.")
     }
 }
-
 
 fun <R, S> Flow<R>.transform(scope: CoroutineScope, bufferSize: Int, transformer: suspend (R) -> S) =
     flow {

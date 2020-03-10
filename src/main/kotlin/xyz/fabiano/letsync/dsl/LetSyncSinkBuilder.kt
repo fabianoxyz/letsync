@@ -4,7 +4,7 @@ import xyz.fabiano.letsync.api.LetSyncSink
 import xyz.fabiano.letsync.core.sink.FunctionSink
 
 @SyncDsl
-class SinkChannelBuilder<T> {
+class LetSyncSinkBuilder<T> {
 
     private var foreignBuilder : (() -> LetSyncSink<T>)? = null
     private var function : ((T) -> Unit)? = null
